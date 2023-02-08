@@ -1,0 +1,9 @@
+componentType: pubsub.azure.servicebus
+version: v1
+name: pubsub1
+metadata:
+  - name: connectionString
+    value: "PUT_CONNECTION_HERE_OR_USE_SECRET"
+scopes:
+  - frontend
+  - backend

@@ -1,0 +1,52 @@
+version: '3.4'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Frontend.Dockerfile
+    ports:
+      - "8080:80"
+
+  frontend-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "frontend", 
+      "-app-port", "80",
+      "-components-path", "./components" ] 
+    volumes:
+      - "./dapr/components/local/:/components"
+    depends_on:
+      - frontend
+    network_mode: "service:frontend"
+  
+  backend:
+    build:
+      context: .
+      dockerfile: Backend.Dockerfile
+    ports:
+      - "8081:80"
+
+  saturn-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "backend", 
+      "-app-port", "80",
+      "-components-path", "./components"] 
+    volumes:
+      - "./dapr/components/local/:/components"
+    depends_on:
+      - backend
+    network_mode: "service:backend"
+
+  broker:
+    image: rabbitmq:3.11.8-management
+    ports:
+      - "15672:15672"
+    # environment:
+    #   - RABBITMQ_DEFAULT_USER=admin
+    #   - RABBITMQ_DEFAULT_PASS=C0dicePlastic0
+    #   - RABBITMQ_DEFAULT_VHOST=codiceplastico
+    
+
+  
