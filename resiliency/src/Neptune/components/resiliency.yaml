@@ -1,0 +1,18 @@
+apiVersion: dapr.io/v1alpha1
+kind: Resiliency
+metadata:
+  name: custom_resiliency
+spec:
+  policies:
+    circuitBreakers:
+      simple:
+        maxRequests: 1
+        timeout: 30s 
+        trip: consecutiveFailures >= 5
+
+  targets:
+    apps:
+      neptune:
+        circuitBreaker: simple
+
+    
