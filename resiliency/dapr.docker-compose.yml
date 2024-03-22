@@ -1,0 +1,64 @@
+version: '3.4'
+
+services:
+  neptune:
+    build:
+      context: src/Neptune
+    environment:
+      - "API_TIMEOUT_VALUE=10000"
+      - "API_RETRY_THRESHOLD=750"
+    ports:
+      - "8080:80"
+      - "51000:50001"
+
+  neptune-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "neptune", 
+      "-app-port", "80" ] 
+    depends_on:
+      - neptune
+    network_mode: "service:neptune"
+
+  saturn:
+    build:
+      context: src/Saturn
+    ports:
+      - "8081:80"
+      - "52000:50001"
+
+  saturn-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", 
+      "-app-id", "saturn", 
+      "-app-port", "80",
+      "-config", "./components/config.yaml",
+      "-components-path", "./components" ]
+    volumes:
+      - "./src/Saturn/components/:/components"
+    depends_on:
+      - saturn
+    network_mode: "service:saturn"
+
+  locust-master:
+    image: locustio/locust
+    environment:
+      - "LOCUST_HOST=http://saturn"
+      - "LOCUST_MODE_MASTER=1"
+    ports:
+      - 8089:8089
+    volumes:
+      - "./locustfile.py:/locustfile.py" 
+  
+  locust-node:
+    image: locustio/locust
+    environment:
+      - "LOCUST_HOST=http://saturn"
+      - "LOCUST_MODE_WORKER=1"
+      - "LOCUST_MASTER_NODE_HOST=locust-master"
+    deploy:
+      replicas: 4
+    volumes:
+      - "./locustfile.py:/locustfile.py"
+    depends_on:
+      - locust-master
