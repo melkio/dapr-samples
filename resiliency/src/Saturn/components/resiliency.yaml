@@ -15,10 +15,16 @@ spec:
         timeout: 30s 
         trip: consecutiveFailures >= 5
 
+    retries:
+      default:
+        policy: constant
+        duration: 1s
+        maxRetries: -1
   targets:
     apps:
       neptune:
         timeout: default
         circuitBreaker: default
+        # retry: default
 
     
