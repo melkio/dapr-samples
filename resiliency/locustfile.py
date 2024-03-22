@@ -2,12 +2,16 @@ from locust import HttpUser, task, between
 
 class MyUser(HttpUser):
     @task(1)
-    def values(self):
+    def simple(self):
         self.client.get("/api/values")
+    
+    @task(1)
+    def timeout(self):
+        self.client.get("/api/values/timeout")
 
-    @task(10)
-    def detailed(self):
-        self.client.get("/api/values/detailed")
+    # @task(1)
+    # def retry(self):
+    #     self.client.get("/api/values/retry")
 
     wait_time = between(0.1, 0.2)
     
