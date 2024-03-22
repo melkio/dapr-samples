@@ -8,11 +8,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDaprClient();
 
-builder.Services.AddHttpClient("neptune", config =>
-{
-    config.BaseAddress = new Uri("http://localhost:3500");
-    config.DefaultRequestHeaders.Add("dapr-app-id", "neptune");
-});
+// builder.Services.AddHttpClient("neptune", config =>
+// {
+//     config.BaseAddress = new Uri("http://localhost:3500");
+//     config.DefaultRequestHeaders.Add("dapr-app-id", "neptune");
+// });
 
 builder.Services.AddHealthChecks();
 
